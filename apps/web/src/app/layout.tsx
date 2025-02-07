@@ -1,8 +1,9 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/Theme-provider";
-import Header from "@/components/Header";
 import { AuthProvider } from "@/context/auth-context";
+import ClientHeader from "@/components/ClientHeader";
+import ClientMain from "@/components/ClientMain";
 
 export const metadata = {
   title: "ExcaliClone",
@@ -18,13 +19,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   console.log("Global Layout Loaded");
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Header />
-            <main className="container mx-auto px-4 py-8">{children}</main>
+            <ClientHeader />
+            <ClientMain>{children}</ClientMain>
           </ThemeProvider>
         </AuthProvider>
       </body>

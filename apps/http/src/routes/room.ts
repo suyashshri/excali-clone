@@ -86,7 +86,10 @@ roomRouter.get("/", middleware, async (req, res) => {
 
 roomRouter.get("/:slug", middleware, async (req, res) => {
   const slug = req.params.slug;
-  const id = req.query.id as string | undefined;
+  let id = req.query.id as string | undefined;
+  if (typeof id === "string") {
+    id = id.replace(/\\$/, "");
+  }
 
   try {
     const room = await db.room.findFirst({

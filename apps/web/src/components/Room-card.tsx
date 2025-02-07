@@ -16,6 +16,9 @@ interface RoomCardProps {
 
 export default function RoomCard({ room }: RoomCardProps) {
   const { userId } = useAuth();
+  console.log(userId);
+
+  const slug = room.slug.split(" ").join("_");
 
   return (
     <Card>
@@ -24,7 +27,7 @@ export default function RoomCard({ room }: RoomCardProps) {
       </CardHeader>
       <CardContent>
         <Button asChild>
-          <Link href={`/room/${room.slug}?id=${userId}`}>
+          <Link href={`/room/${slug}?id=${userId}`}>
             Enter Room <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>

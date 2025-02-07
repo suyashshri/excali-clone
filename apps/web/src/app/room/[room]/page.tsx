@@ -1,8 +1,10 @@
-import ChatRoom from "@/components/ChatRoom";
+import { CheckUser } from "@/components/CheckUser";
 
 const page = async ({ params }: { params: { room: string } }) => {
-  const room = (await params).room;
-  return <ChatRoom roomName={room} />;
+  let room = (await params).room;
+  room = room.split("_").join(" ");
+
+  return <CheckUser room={room} />;
 };
 
 export default page;

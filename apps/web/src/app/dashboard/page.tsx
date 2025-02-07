@@ -24,10 +24,11 @@ export default function Dashboard() {
 
   const handleAddRoom = async (roomName: string) => {
     try {
+      const slug = roomName;
       const room = await axios.post(
         `${HTTP_BACKEND}/user/room`,
         {
-          name: roomName,
+          name: slug,
         },
         {
           headers: {
