@@ -25,7 +25,7 @@ roomRouter.post("/", middleware, async (req, res) => {
         adminId: userId,
       },
     });
-    res.json({ roomId: room.id }).status(200);
+    res.json({ roomId: room.id, adminId: room.adminId }).status(200);
   } catch (error) {
     console.log("Error creating room: ", error);
     res.json({

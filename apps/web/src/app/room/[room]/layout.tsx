@@ -3,7 +3,5 @@ export default function RoomLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("Room Layout Loaded");
-
   return <>{children}</>;
 }

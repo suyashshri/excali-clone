@@ -13,13 +13,14 @@ import { useRouter } from "next/navigation";
 interface Room {
   id: string;
   slug: string;
+  adminId: string;
   createdAt?: Date;
 }
 
 export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rooms, setRooms] = useState<Room[]>([]);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, setUserId } = useAuth();
   const router = useRouter();
 
   const handleAddRoom = async (roomName: string) => {
@@ -36,11 +37,15 @@ export default function Dashboard() {
           },
         }
       );
+
       const newRoom: Room = {
         id: room.data.roomId,
         slug: roomName,
+        adminId: room.data.adminId,
         createdAt: new Date(),
       };
+      setUserId(newRoom.adminId);
+
       setRooms((prevRooms) => [...prevRooms, newRoom]);
       setIsModalOpen(false);
     } catch (error) {
@@ -69,8 +74,6 @@ export default function Dashboard() {
   }, [isAuthenticated, router]);
 
   if (!isAuthenticated) {
-    console.log("hello from null");
-
     return null; // or a loading spinner
   }
 

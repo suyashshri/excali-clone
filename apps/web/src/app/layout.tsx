@@ -18,8 +18,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("Global Layout Loaded");
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>

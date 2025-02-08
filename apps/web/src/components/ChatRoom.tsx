@@ -35,8 +35,6 @@ const ChatRoom = ({ roomName }: { roomName: string }) => {
 
         if (response.status == 200) {
           const roomId = response.data.room.id.toString();
-          console.log(roomId);
-
           setRoomId(roomId);
 
           if (!roomId) {
@@ -67,7 +65,7 @@ const ChatRoom = ({ roomName }: { roomName: string }) => {
     };
   }, [roomName, userId]);
 
-  if (!socket) {
+  if (!socket || !userId) {
     // router.push("/sign-up");
     return <div>Loading...</div>;
   }
