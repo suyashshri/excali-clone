@@ -1,5 +1,4 @@
 import { HTTP_BACKEND } from "@/app/config";
-import { useCanvas } from "@/context/canvas-context";
 import axios from "axios";
 
 export async function initDraw(
@@ -8,8 +7,6 @@ export async function initDraw(
   socket: WebSocket,
   selectedButton: string
 ) {
-  console.log("inside before usecanvas init draw");
-
   console.log("selectedButton", selectedButton);
 
   let context = canvas.getContext("2d");
@@ -25,7 +22,6 @@ export async function initDraw(
     if (message.type == "chat") {
       const parsedData = JSON.parse(message.message);
       existingShapes.push(parsedData.shape);
-      clearCanvas(canvas, context, existingShapes);
     }
   };
 
@@ -71,18 +67,36 @@ export async function initDraw(
     const width = e.clientX - startX;
     const height = e.clientY - startY;
 
-    shape = {
-      type: "Rectangle",
-      x: startX,
-      y: startY,
-      width,
-      height,
-    };
+    if (selectedButton === "Rectangle") {
+      shape = {
+        type: "Rectangle",
+        x: startX,
+        y: startY,
+        width,
+        height,
+      };
+    } else if (selectedButton === "Circle") {
+      shape = {
+        type: "Circle",
+        x: startX + width / 2,
+        y: startY + height / 2,
+        radiusX: width / 2,
+        radiusY: height / 2,
+        rotation: 0,
+        startAngle: 0,
+        endAngle: 2 * Math.PI,
+      };
+    }
+
     if (!shape) {
       return;
     }
 
-    existingShapes.push(shape);
+    if (shape.type === selectedButton) {
+      existingShapes.push(shape);
+      console.log("existingShapes", existingShapes);
+      console.log("shapeeee", shape);
+    }
 
     socket.send(
       JSON.stringify({
@@ -93,14 +107,6 @@ export async function initDraw(
         roomId,
       })
     );
-
-    // socket.send(
-    //   JSON.stringify({
-    //     type: "chat",
-    //     roomId,
-    //     messgae: JSON.stringify({ data }),
-    //   })
-    // );
   };
 
   canvas.addEventListener("mousedown", handleMouseDown);
@@ -141,8 +147,6 @@ export function clearCanvas(
     }
   });
 }
-
-export function getShapes(context: CanvasRenderingContext2D) {}
 
 async function getShapesFromDb(roomId: string) {
   const response = await axios.get(

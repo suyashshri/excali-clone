@@ -16,11 +16,24 @@ export default function Canvas({
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    setDimensions({ width: window.innerWidth, height: window.innerHeight });
-    if (canvasref.current) {
-      initDraw(canvasref.current, roomId, socket, selectedButton);
-    }
+    let cleanup: (() => void) | undefined;
+    const init = async () => {
+      setDimensions({ width: window.innerWidth, height: window.innerHeight });
+      if (canvasref.current) {
+        const cleanup = await initDraw(
+          canvasref.current,
+          roomId,
+          socket,
+          selectedButton
+        );
+      }
+    };
+    init();
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [selectedButton, roomId, socket]);
+
   return (
     <div className="overflow-hidden relative">
       <canvas

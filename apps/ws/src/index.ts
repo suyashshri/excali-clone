@@ -108,13 +108,15 @@ wss.on("connection", (ws, request) => {
 
       users.forEach((user) => {
         if (user.rooms.includes(roomId.toString())) {
-          user.ws.send(
-            JSON.stringify({
-              type: "chat",
-              roomId: roomId,
-              message: message,
-            })
-          );
+          if (ws !== user.ws) {
+            user.ws.send(
+              JSON.stringify({
+                type: "chat",
+                roomId: roomId,
+                message: message,
+              })
+            );
+          }
         }
       });
     }
