@@ -1,30 +1,38 @@
-export function initDraw(
+import { HTTP_BACKEND } from "@/app/config";
+import { useCanvas } from "@/context/canvas-context";
+import axios from "axios";
+
+export async function initDraw(
   canvas: HTMLCanvasElement,
-  selectedTool = "Rectangle",
   roomId: string,
-  socket: WebSocket
+  socket: WebSocket,
+  selectedButton: string
 ) {
+  console.log("inside before usecanvas init draw");
+
+  console.log("selectedButton", selectedButton);
+
   let context = canvas.getContext("2d");
   if (!context) {
     console.log("no context");
     return;
   }
 
+  let existingShapes: Shapes[] = await getShapesFromDb(roomId);
+
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
     if (message.type == "chat") {
       const parsedData = JSON.parse(message.message);
       existingShapes.push(parsedData.shape);
-      clearCanvas(canvas, context);
-      getShapes(context, existingShapes);
+      clearCanvas(canvas, context, existingShapes);
     }
   };
 
-  clearCanvas(canvas, context);
-  let existingShapes: Shapes[] = [];
   let clicked = false;
   let startX = 0;
   let startY = 0;
+  clearCanvas(canvas, context, existingShapes);
 
   const handleMouseDown = (e: MouseEvent) => {
     clicked = true;
@@ -37,11 +45,11 @@ export function initDraw(
       const width = e.clientX - startX;
       const height = e.clientY - startY;
 
-      clearCanvas(canvas, context);
+      clearCanvas(canvas, context, existingShapes);
 
-      if (selectedTool === "Rectangle") {
+      if (selectedButton === "Rectangle") {
         context.strokeRect(startX, startY, width, height);
-      } else if (selectedTool == "Circle") {
+      } else if (selectedButton == "Circle") {
         context.beginPath();
         context.ellipse(
           startX + width / 2,
@@ -54,7 +62,6 @@ export function initDraw(
         );
         context.stroke();
       }
-      getShapes(context, existingShapes);
     }
   };
 
@@ -76,7 +83,6 @@ export function initDraw(
     }
 
     existingShapes.push(shape);
-    console.log(existingShapes);
 
     socket.send(
       JSON.stringify({
@@ -95,8 +101,6 @@ export function initDraw(
     //     messgae: JSON.stringify({ data }),
     //   })
     // );
-
-    getShapes(context, existingShapes);
   };
 
   canvas.addEventListener("mousedown", handleMouseDown);
@@ -112,18 +116,13 @@ export function initDraw(
 
 export function clearCanvas(
   canvas: HTMLCanvasElement,
-  context: CanvasRenderingContext2D
+  context: CanvasRenderingContext2D,
+  existingShapes: Shapes[]
 ) {
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = "rgba(25,25,25)";
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.strokeStyle = "rgba(255,255,255)";
-}
-
-export function getShapes(
-  context: CanvasRenderingContext2D,
-  existingShapes: Shapes[]
-) {
   existingShapes.forEach((shape) => {
     if (shape.type == "Rectangle") {
       context.strokeRect(shape.x, shape.y, shape.width, shape.height);
@@ -141,4 +140,25 @@ export function getShapes(
       context.stroke();
     }
   });
+}
+
+export function getShapes(context: CanvasRenderingContext2D) {}
+
+async function getShapesFromDb(roomId: string) {
+  const response = await axios.get(
+    `${HTTP_BACKEND}/user/room/chats/${roomId}`,
+    {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    }
+  );
+  const messages = response.data.messages;
+
+  const shapes = messages.map((x: { message: string }) => {
+    const parsedMessage = JSON.parse(x.message);
+    return parsedMessage.shape;
+  });
+
+  return shapes;
 }

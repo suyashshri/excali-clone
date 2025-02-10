@@ -1,4 +1,5 @@
 "use client";
+import { useCanvas } from "@/context/canvas-context";
 import { initDraw } from "@/Game-Logic/Game";
 import { Circle, RectangleHorizontal } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -11,40 +12,40 @@ export default function Canvas({
   socket: WebSocket;
 }) {
   const canvasref = useRef<HTMLCanvasElement>(null);
-  const [selectedTool, setSelecetedTool] = useState<"Rectangle" | "Circle">(
-    "Rectangle"
-  );
+  const { selectedButton, setSelectedButton } = useCanvas();
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
+    setDimensions({ width: window.innerWidth, height: window.innerHeight });
     if (canvasref.current) {
-      initDraw(canvasref.current, selectedTool, roomId, socket);
+      initDraw(canvasref.current, roomId, socket, selectedButton);
     }
-  }, []);
+  }, [selectedButton, roomId, socket]);
   return (
     <div className="overflow-hidden relative">
       <canvas
         ref={canvasref}
-        width={window.innerWidth}
-        height={window.innerHeight}
+        width={dimensions.width}
+        height={dimensions.height}
       ></canvas>
       <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-gray-700 px-2 py-4 rounded-md h-12 z-10 flex gap-2 justify-center items-center">
         <button
           className={
-            selectedTool === "Rectangle"
+            selectedButton === "Rectangle"
               ? "w-10 h-10 rounded bg-cyan-600 flex justify-center items-center"
               : "w-10 h-10 rounded flex justify-center items-center hover:bg-gray-800"
           }
-          onClick={() => setSelecetedTool("Rectangle")}
+          onClick={() => setSelectedButton("Rectangle")}
         >
           <RectangleHorizontal className="text-white" />
         </button>
         <button
           className={
-            selectedTool === "Circle"
+            selectedButton === "Circle"
               ? "w-10 h-10 rounded bg-cyan-600 flex justify-center items-center"
               : "w-10 h-10 rounded flex justify-center items-center hover:bg-gray-800"
           }
-          onClick={() => setSelecetedTool("Circle")}
+          onClick={() => setSelectedButton("Circle")}
         >
           <Circle className="text-white" />
         </button>
