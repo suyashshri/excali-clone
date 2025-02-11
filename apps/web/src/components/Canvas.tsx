@@ -1,6 +1,6 @@
 "use client";
 import { useCanvas } from "@/context/canvas-context";
-import { initDraw } from "@/Game-Logic/Game";
+import { Game } from "@/Game-Logic/Game";
 import { Circle, RectangleHorizontal } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -13,25 +13,42 @@ export default function Canvas({
 }) {
   const canvasref = useRef<HTMLCanvasElement>(null);
   const { selectedButton, setSelectedButton } = useCanvas();
+  const [game, setGame] = useState<Game>();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    let cleanup: (() => void) | undefined;
-    const init = async () => {
+    // let cleanup: (() => void) | undefined;
+
+    // (async () => {
+    //   setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    //   if (canvasref.current) {
+    //     console.log("Calling initDraw");
+    //     const cleanup = await initDraw(
+    //       canvasref.current,
+    //       roomId,
+    //       socket,
+    //       selectedButton
+    //     );
+    //   }
+    // })();
+    // return () => {
+    //   if (cleanup) {
+    //     console.log("Cleaning up event listeners from Canvas.tsx", cleanup);
+    //     cleanup();
+    //   }
+    // };
+
+    if (canvasref.current) {
       setDimensions({ width: window.innerWidth, height: window.innerHeight });
-      if (canvasref.current) {
-        const cleanup = await initDraw(
-          canvasref.current,
-          roomId,
-          socket,
-          selectedButton
-        );
-      }
-    };
-    init();
-    return () => {
-      if (cleanup) cleanup();
-    };
+      const g = new Game(canvasref.current, roomId, socket, selectedButton);
+      setGame(g);
+
+      return () => {
+        console.log("Cleaning up event listeners from Canvas.tsx");
+
+        // g.destroy();
+      };
+    }
   }, [selectedButton, roomId, socket]);
 
   return (

@@ -65,22 +65,16 @@ wss.on("connection", (ws, request) => {
       parsedData = JSON.parse(data);
     }
 
-    if (parsedData.type === "create_room") {
-      users.push({
-        ws,
-        role: Role.Admin,
-        userId,
-        rooms: [],
-      });
-    }
+    // if (parsedData.type === "create_room") {
+    //   users.push({
+    //     ws,
+    //     role: Role.Admin,
+    //     userId,
+    //     rooms: [],
+    //   });
+    // }
 
     if (parsedData.type === "join_room") {
-      users.push({
-        ws,
-        role: Role.User,
-        userId,
-        rooms: [],
-      });
       const user = users.find((u) => u.ws === ws);
       // if()
       user?.rooms.push(parsedData.roomId);
@@ -89,9 +83,18 @@ wss.on("connection", (ws, request) => {
     if (parsedData.type === "leave_room") {
       const user = users.find((u) => u.ws === ws);
       if (!user) {
+        // users.push({ ws, role: Role.User, userId, rooms: [parsedData.roomId] });
         return;
+      } else {
+        if (!user.rooms.includes(parsedData.roomId)) {
+          user.rooms.push(parsedData.roomId);
+        }
       }
-      user.rooms = user.rooms.filter((u) => u === parsedData.roomId);
+      // const user = users.find((u) => u.ws === ws);
+      // if (!user) {
+      //   return;
+      // }
+      // user.rooms = user.rooms.filter((u) => u === parsedData.roomId);
     }
 
     if (parsedData.type === "chat") {
