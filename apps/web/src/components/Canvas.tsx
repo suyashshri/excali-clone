@@ -17,27 +17,6 @@ export default function Canvas({
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    // let cleanup: (() => void) | undefined;
-
-    // (async () => {
-    //   setDimensions({ width: window.innerWidth, height: window.innerHeight });
-    //   if (canvasref.current) {
-    //     console.log("Calling initDraw");
-    //     const cleanup = await initDraw(
-    //       canvasref.current,
-    //       roomId,
-    //       socket,
-    //       selectedButton
-    //     );
-    //   }
-    // })();
-    // return () => {
-    //   if (cleanup) {
-    //     console.log("Cleaning up event listeners from Canvas.tsx", cleanup);
-    //     cleanup();
-    //   }
-    // };
-
     if (canvasref.current) {
       setDimensions({ width: window.innerWidth, height: window.innerHeight });
       const g = new Game(canvasref.current, roomId, socket, selectedButton);
@@ -45,8 +24,7 @@ export default function Canvas({
 
       return () => {
         console.log("Cleaning up event listeners from Canvas.tsx");
-
-        // g.destroy();
+        g.destroy();
       };
     }
   }, [selectedButton, roomId, socket]);
