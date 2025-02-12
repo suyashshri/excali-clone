@@ -1,4 +1,4 @@
-import { getExistingShapes } from "./http";
+import { debounce, getExistingShapes } from "./http";
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -37,15 +37,18 @@ export class Game {
 
   async init() {
     this.existingShapes = await getExistingShapes(this.roomId);
+    console.log("existingShapessssss", this.existingShapes);
     this.clearCanvas();
   }
 
   initHandlers() {
     this.socket.onmessage = (event) => {
       const parsedData = JSON.parse(event.data);
+
       if (parsedData.type === "chat") {
         const parsedMessage = JSON.parse(parsedData.message);
-        this.existingShapes.push(parsedMessage);
+
+        this.existingShapes.push(parsedMessage.shape);
         this.clearCanvas();
       }
     };
@@ -56,6 +59,7 @@ export class Game {
     this.context.fillStyle = "rgba(25,25,25)";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.strokeStyle = "rgba(255,255,255)";
+    console.log("inside clear canvas", this.existingShapes);
     this.existingShapes.forEach((shape) => {
       if (shape.type == "Rectangle") {
         this.context.strokeRect(shape.x, shape.y, shape.width, shape.height);
@@ -80,6 +84,7 @@ export class Game {
     this.startX = e.clientX;
     this.startY = e.clientY;
   };
+
   mouseMoveHandler = (e: MouseEvent) => {
     if (this.clicked) {
       const width = e.clientX - this.startX;
@@ -104,6 +109,7 @@ export class Game {
       }
     }
   };
+
   mouseUpHandler = (e: MouseEvent) => {
     this.clicked = false;
     let shape: Shapes | null = null;
@@ -135,27 +141,33 @@ export class Game {
       return;
     }
 
-    if (shape.type === this.selectedButton) {
-      this.existingShapes.push(shape);
-      console.log("existingShapes", this.existingShapes);
-      console.log("shapeeee", shape);
-    }
+    this.existingShapes.push(shape);
 
-    this.socket.send(
-      JSON.stringify({
-        type: "chat",
-        message: JSON.stringify({
-          shape,
-        }),
-        roomId: this.roomId,
-      })
-    );
+    try {
+      this.socket.send(
+        JSON.stringify({
+          type: "chat",
+          message: JSON.stringify({ shape }),
+          roomId: this.roomId,
+        })
+      );
+      console.log("Message sent to WebSocket:", shape);
+    } catch (error) {
+      console.error("WebSocket send failed:", error);
+    }
   };
 
   initMouseHandler() {
+    // const debouncedMouseMoveHandler = debounce(
+    //   this.mouseMoveHandler.bind(this),
+    //   200
+    // );
+
     this.canvas.addEventListener("mousedown", this.mouseDownHandler);
     this.canvas.addEventListener("mousemove", this.mouseMoveHandler);
     this.canvas.addEventListener("mouseup", this.mouseUpHandler);
+
+    // this.mouseMoveHandler = debouncedMouseMoveHandler;
   }
 }
 

@@ -19,3 +19,23 @@ export async function getExistingShapes(roomId: string) {
 
   return shapes;
 }
+
+// export function debounce(func: Function, wait: number) {
+//   let timeout: ReturnType<typeof setTimeout> | null = null;
+//   return function (this: any, ...args: any[]) {
+//     if (timeout !== null) {
+//       clearTimeout(timeout);
+//     }
+//     timeout = setTimeout(() => func.apply(this, args), wait);
+//   };
+// }
+
+export function debounce(func: Function, delay: number) {
+  let timer: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}

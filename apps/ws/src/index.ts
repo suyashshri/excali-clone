@@ -100,6 +100,7 @@ wss.on("connection", (ws, request) => {
     if (parsedData.type === "chat") {
       const roomId = Number(parsedData.roomId);
       const message = parsedData.message;
+      console.log("inside chat from ws", roomId, message);
 
       await db.chat.create({
         data: {
@@ -111,6 +112,11 @@ wss.on("connection", (ws, request) => {
 
       users.forEach((user) => {
         if (user.rooms.includes(roomId.toString())) {
+          console.log(
+            "inside for each sending to other user from ws",
+            user.userId
+          );
+
           if (ws !== user.ws) {
             user.ws.send(
               JSON.stringify({
