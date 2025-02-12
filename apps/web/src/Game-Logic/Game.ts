@@ -37,7 +37,6 @@ export class Game {
 
   async init() {
     this.existingShapes = await getExistingShapes(this.roomId);
-    console.log("existingShapessssss", this.existingShapes);
     this.clearCanvas();
   }
 
@@ -59,7 +58,6 @@ export class Game {
     this.context.fillStyle = "rgba(25,25,25)";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.strokeStyle = "rgba(255,255,255)";
-    console.log("inside clear canvas", this.existingShapes);
     this.existingShapes.forEach((shape) => {
       if (shape.type == "Rectangle") {
         this.context.strokeRect(shape.x, shape.y, shape.width, shape.height);

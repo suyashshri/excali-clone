@@ -41,6 +41,7 @@ wss.on("connection", (ws, request) => {
     ws.close();
     return;
   }
+
   const queryParams = new URLSearchParams(url.split("?")[1]);
   const token = queryParams.get("token") || "";
   const userId = authenticateUser(token);
@@ -49,6 +50,7 @@ wss.on("connection", (ws, request) => {
     ws.close();
     return;
   }
+
   users.push({
     ws,
     role: Role.User,
@@ -65,25 +67,17 @@ wss.on("connection", (ws, request) => {
       parsedData = JSON.parse(data);
     }
 
-    // if (parsedData.type === "create_room") {
-    //   users.push({
-    //     ws,
-    //     role: Role.Admin,
-    //     userId,
-    //     rooms: [],
-    //   });
-    // }
-
     if (parsedData.type === "join_room") {
       const user = users.find((u) => u.ws === ws);
-      // if()
+      console.log("user inside join room", user?.userId);
+
       user?.rooms.push(parsedData.roomId);
+      console.log("user's room inside join room", user?.rooms);
     }
 
     if (parsedData.type === "leave_room") {
       const user = users.find((u) => u.ws === ws);
       if (!user) {
-        // users.push({ ws, role: Role.User, userId, rooms: [parsedData.roomId] });
         return;
       } else {
         if (!user.rooms.includes(parsedData.roomId)) {
@@ -101,6 +95,7 @@ wss.on("connection", (ws, request) => {
       const roomId = Number(parsedData.roomId);
       const message = parsedData.message;
       console.log("inside chat from ws", roomId, message);
+      console.log("userss list", users);
 
       await db.chat.create({
         data: {
