@@ -1,7 +1,13 @@
 "use client";
 import { useCanvas } from "@/context/canvas-context";
 import { Game } from "@/Game-Logic/Game";
-import { ArrowRight, Circle, Diamond, RectangleHorizontal } from "lucide-react";
+import {
+  ArrowRight,
+  Circle,
+  Diamond,
+  Minus,
+  RectangleHorizontal,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export default function Canvas({
@@ -75,6 +81,16 @@ export default function Canvas({
           onClick={() => setSelectedButton("Arrow")}
         >
           <ArrowRight className="text-white" />
+        </button>
+        <button
+          className={
+            selectedButton === "Line"
+              ? "w-10 h-10 rounded bg-cyan-600 flex justify-center items-center"
+              : "w-10 h-10 rounded flex justify-center items-center hover:bg-gray-800"
+          }
+          onClick={() => setSelectedButton("Line")}
+        >
+          <Minus className="text-white" />
         </button>
       </div>
     </div>

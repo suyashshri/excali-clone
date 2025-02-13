@@ -29,6 +29,13 @@ type Shapes =
       startY: number;
       endX: number;
       endY: number;
+    }
+  | {
+      type: "Line";
+      startX: number;
+      startY: number;
+      endX: number;
+      endY: number;
     };
 
-type Tools = "Rectangle" | "Circle" | "Diamond" | "Arrow";
+type Tools = "Rectangle" | "Circle" | "Diamond" | "Arrow" | "Line";

@@ -100,6 +100,11 @@ export class Game {
           shape.endY - headlen * Math.sin(angle + Math.PI / 6)
         );
         this.context.stroke();
+      } else if (shape.type == "Line") {
+        this.context.beginPath();
+        this.context.moveTo(shape.startX, shape.startY);
+        this.context.lineTo(shape.endX, shape.endY);
+        this.context.stroke();
       }
     });
   }
@@ -157,6 +162,11 @@ export class Game {
           e.clientY - headlen * Math.sin(angle + Math.PI / 6)
         );
         this.context.stroke();
+      } else if (this.selectedButton == "Line") {
+        this.context.beginPath();
+        this.context.moveTo(this.startX, this.startY);
+        this.context.lineTo(e.clientX, e.clientY);
+        this.context.stroke();
       }
     }
   };
@@ -197,6 +207,14 @@ export class Game {
     } else if (this.selectedButton === "Arrow") {
       shape = {
         type: "Arrow",
+        startX: this.startX,
+        startY: this.startY,
+        endX: e.clientX,
+        endY: e.clientY,
+      };
+    } else if (this.selectedButton === "Line") {
+      shape = {
+        type: "Line",
         startX: this.startX,
         startY: this.startY,
         endX: e.clientX,
