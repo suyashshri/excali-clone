@@ -15,6 +15,13 @@ type Shapes =
       rotation: number;
       startAngle: number;
       endAngle: number;
+    }
+  | {
+      type: "Diamond";
+      x: number;
+      y: number;
+      width: number;
+      height: number;
     };
 
-type Tools = "Rectangle" | "Circle";
+type Tools = "Rectangle" | "Circle" | "Diamond";

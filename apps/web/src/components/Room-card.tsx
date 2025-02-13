@@ -16,7 +16,6 @@ interface RoomCardProps {
 
 export default function RoomCard({ room }: RoomCardProps) {
   const { userId } = useAuth();
-  console.log(userId);
 
   const slug = room.slug.split(" ").join("_");
 

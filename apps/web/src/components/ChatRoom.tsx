@@ -38,7 +38,6 @@ const ChatRoom = ({ roomName }: { roomName: string }) => {
           setRoomId(roomId);
 
           if (!roomId) {
-            console.log("no roomId present yet");
             return;
           }
           const ws = new WebSocket(`${WS_URL}?token=${token.split(" ")[1]}`);
@@ -60,9 +59,7 @@ const ChatRoom = ({ roomName }: { roomName: string }) => {
     };
     fetchRoomId(roomName);
 
-    return () => {
-      // console.log("Cleaning up for previous Room ID:", id);
-    };
+    return () => {};
   }, [roomName, userId]);
 
   if (!socket || !userId) {
