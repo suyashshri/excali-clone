@@ -82,6 +82,24 @@ export class Game {
         this.context.lineTo(shape.x, shape.y + shape.height / 2);
         this.context.closePath();
         this.context.stroke();
+      } else if (shape.type == "Arrow") {
+        var headlen = 10;
+        var dx = shape.endX - shape.startX;
+        var dy = shape.endY - shape.startY;
+        var angle = Math.atan2(dy, dx);
+        this.context.beginPath();
+        this.context.moveTo(shape.startX, shape.startY);
+        this.context.lineTo(shape.endX, shape.endY);
+        this.context.lineTo(
+          shape.endX - headlen * Math.cos(angle - Math.PI / 6),
+          shape.endY - headlen * Math.sin(angle - Math.PI / 6)
+        );
+        this.context.moveTo(shape.endX, shape.endY);
+        this.context.lineTo(
+          shape.endX - headlen * Math.cos(angle + Math.PI / 6),
+          shape.endY - headlen * Math.sin(angle + Math.PI / 6)
+        );
+        this.context.stroke();
       }
     });
   }
@@ -121,6 +139,24 @@ export class Game {
         this.context.lineTo(this.startX, this.startY + height / 2);
         this.context.closePath();
         this.context.stroke();
+      } else if (this.selectedButton == "Arrow") {
+        var headlen = 10;
+        var dx = e.clientX - this.startX;
+        var dy = e.clientY - this.startY;
+        var angle = Math.atan2(dy, dx);
+        this.context.beginPath();
+        this.context.moveTo(this.startX, this.startY);
+        this.context.lineTo(e.clientX, e.clientY);
+        this.context.lineTo(
+          e.clientX - headlen * Math.cos(angle - Math.PI / 6),
+          e.clientY - headlen * Math.sin(angle - Math.PI / 6)
+        );
+        this.context.moveTo(e.clientX, e.clientY);
+        this.context.lineTo(
+          e.clientX - headlen * Math.cos(angle + Math.PI / 6),
+          e.clientY - headlen * Math.sin(angle + Math.PI / 6)
+        );
+        this.context.stroke();
       }
     }
   };
@@ -157,6 +193,14 @@ export class Game {
         y: this.startY,
         width,
         height,
+      };
+    } else if (this.selectedButton === "Arrow") {
+      shape = {
+        type: "Arrow",
+        startX: this.startX,
+        startY: this.startY,
+        endX: e.clientX,
+        endY: e.clientY,
       };
     }
 
