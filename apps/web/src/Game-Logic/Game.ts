@@ -129,8 +129,8 @@ export class Game {
         this.context.ellipse(
           this.startX + width / 2,
           this.startY + height / 2,
-          width / 2,
-          height / 2,
+          Math.abs(width) / 2,
+          Math.abs(height) / 2,
           0,
           0,
           2 * Math.PI
@@ -190,8 +190,8 @@ export class Game {
         type: "Circle",
         x: this.startX + width / 2,
         y: this.startY + height / 2,
-        radiusX: width / 2,
-        radiusY: height / 2,
+        radiusX: Math.abs(width) / 2,
+        radiusY: Math.abs(height) / 2,
         rotation: 0,
         startAngle: 0,
         endAngle: 2 * Math.PI,
