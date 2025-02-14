@@ -21,6 +21,7 @@ export default function getUserIdFromToken(): string | null {
         return payload.userId;
       }
     } catch (error) {
+      console.log(error);
       return null;
     }
   }

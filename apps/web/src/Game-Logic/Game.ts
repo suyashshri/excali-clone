@@ -92,10 +92,10 @@ export class Game {
         this.context.closePath();
         this.context.stroke();
       } else if (shape.type == "Arrow") {
-        let headlen = 10;
-        let dx = shape.endX - shape.startX;
-        let dy = shape.endY - shape.startY;
-        let angle = Math.atan2(dy, dx);
+        const headlen = 10;
+        const dx = shape.endX - shape.startX;
+        const dy = shape.endY - shape.startY;
+        const angle = Math.atan2(dy, dx);
         this.context.beginPath();
         this.context.moveTo(shape.startX, shape.startY);
         this.context.lineTo(shape.endX, shape.endY);
