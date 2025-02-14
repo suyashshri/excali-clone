@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center space-y-16 py-16">
       <section className="text-center">
-        <h1 className="text-4xl font-bold mb-6">Welcome to ExcaliClone</h1>
+        <h1 className="text-4xl font-bold mb-6">Welcome to SketchFlow</h1>
         <p className="text-xl mb-8 max-w-2xl">
           Create beautiful diagrams, wireframes, and illustrations with our
           easy-to-use drawing tool. Collaborate in real-time with your team and
@@ -67,7 +67,7 @@ export default function Home() {
       <section className="w-full max-w-4xl text-center">
         <h2 className="text-3xl font-bold mb-6">Ready to get started?</h2>
         <p className="text-xl mb-8">
-          Join thousands of teams already using ExcaliClone to bring their ideas
+          Join thousands of teams already using SketchFlow to bring their ideas
           to life.
         </p>
         <Button asChild size="lg">

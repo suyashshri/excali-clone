@@ -19,7 +19,7 @@ export default function Header() {
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold">
-          ExcaliClone
+          SketchFlow
         </Link>
         <nav className="flex items-center space-x-4">
           <ThemeToggle />

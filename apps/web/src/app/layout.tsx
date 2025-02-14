@@ -6,7 +6,7 @@ import ClientHeader from "@/components/ClientHeader";
 import ClientMain from "@/components/ClientMain";
 
 export const metadata = {
-  title: "ExcaliClone",
+  title: "SketchFlow",
   description:
     "A simple clone of Excalidraw with sign-up and sign-in functionality",
 };
