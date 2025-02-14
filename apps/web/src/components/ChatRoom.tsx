@@ -58,8 +58,6 @@ const ChatRoom = ({ roomName }: { roomName: string }) => {
       }
     };
     fetchRoomId(roomName);
-
-    return () => {};
   }, [roomName, userId]);
 
   if (!socket || !userId) {

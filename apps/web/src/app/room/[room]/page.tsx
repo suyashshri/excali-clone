@@ -1,10 +1,8 @@
 import { CheckUser } from "@/components/CheckUser";
-
-const page = async ({ params }: { params: { room: string } }) => {
-  let room = (await params).room;
+export type paramsType = Promise<{ room: string }>;
+export default async function RoomPage({ params }: { params: paramsType }) {
+  let { room } = await params;
   room = room.split("_").join(" ");
 
   return <CheckUser room={room} />;
-};
-
-export default page;
+}

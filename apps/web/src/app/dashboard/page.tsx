@@ -49,7 +49,7 @@ export default function Dashboard() {
       setRooms((prevRooms) => [...prevRooms, newRoom]);
       setIsModalOpen(false);
     } catch (error) {
-      console.error("Error creating room:", error);
+      console.log("Error creating room:", error);
     }
   };
 
@@ -67,7 +67,7 @@ export default function Dashboard() {
         });
         setRooms(response.data.rooms);
       } catch (error) {
-        console.error("Error fetching rooms:", error);
+        console.log("Error fetching rooms:", error);
       }
     };
     fetchRooms();
@@ -88,7 +88,7 @@ export default function Dashboard() {
 
       {rooms.length === 0 ? (
         <p className="text-center text-gray-500 mt-8">
-          No rooms created yet. Click "Add Room" to get started!
+          No rooms created yet. Click &quot;Add Room&quot; to get started!
         </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

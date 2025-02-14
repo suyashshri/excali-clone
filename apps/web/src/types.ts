@@ -1,4 +1,4 @@
-type Shapes =
+export type Shapes =
   | {
       type: "Rectangle";
       x: number;
@@ -42,9 +42,9 @@ type Shapes =
       strokes: Strokes[];
     };
 
-type Tools = "Rectangle" | "Circle" | "Diamond" | "Arrow" | "Line" | "Pencil";
+// type Tools = "Rectangle" | "Circle" | "Diamond" | "Arrow" | "Line" | "Pencil";
 
-type Strokes = {
+export type Strokes = {
   x: number;
   y: number;
 };

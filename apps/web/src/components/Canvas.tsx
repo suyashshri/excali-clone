@@ -20,14 +20,14 @@ export default function Canvas({
 }) {
   const canvasref = useRef<HTMLCanvasElement>(null);
   const { selectedButton, setSelectedButton } = useCanvas();
-  const [game, setGame] = useState<Game>();
+  // const [game, setGame] = useState<Game>();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     if (canvasref.current) {
       setDimensions({ width: window.innerWidth, height: window.innerHeight });
       const g = new Game(canvasref.current, roomId, socket, selectedButton);
-      setGame(g);
+      // setGame(g);
 
       return () => {
         g.destroy();

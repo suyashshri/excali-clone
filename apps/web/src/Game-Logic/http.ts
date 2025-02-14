@@ -30,12 +30,12 @@ export async function getExistingShapes(roomId: string) {
 //   };
 // }
 
-export function debounce(func: Function, delay: number) {
-  let timer: NodeJS.Timeout;
-  return (...args: any[]) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func(...args);
-    }, delay);
-  };
-}
+// export function debounce(func: Function, delay: number) {
+//   let timer: NodeJS.Timeout;
+//   return (...args: any[]) => {
+//     clearTimeout(timer);
+//     timer = setTimeout(() => {
+//       func(...args);
+//     }, delay);
+//   };
+// }

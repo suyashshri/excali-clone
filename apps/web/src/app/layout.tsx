@@ -4,7 +4,6 @@ import { ThemeProvider } from "@/components/Theme-provider";
 import { AuthProvider } from "@/context/auth-context";
 import ClientHeader from "@/components/ClientHeader";
 import ClientMain from "@/components/ClientMain";
-import { CanvasProvider } from "@/context/canvas-context";
 
 export const metadata = {
   title: "ExcaliClone",

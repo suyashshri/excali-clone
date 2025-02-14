@@ -1,4 +1,5 @@
-import { debounce, getExistingShapes } from "./http";
+import { Shapes, Strokes } from "@/types";
+import { getExistingShapes } from "./http";
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -22,17 +23,15 @@ export class Game {
     socket: WebSocket,
     selectedButton: string
   ) {
-    (this.canvas = canvas),
-      (this.context = canvas.getContext("2d")!),
-      (this.roomId = roomId),
-      (this.socket = socket),
-      (this.selectedButton = selectedButton),
-      (this.clicked = false),
-      (this.existingShapes = []);
-
+    this.canvas = canvas;
+    this.context = canvas.getContext("2d")!;
+    this.roomId = roomId;
+    this.socket = socket;
+    this.selectedButton = selectedButton;
+    this.clicked = false;
+    this.existingShapes = [];
     this.painting = false;
     this.currentStrokes = [];
-
     console.log("selectedtool", this.selectedButton);
 
     this.init();
@@ -93,10 +92,10 @@ export class Game {
         this.context.closePath();
         this.context.stroke();
       } else if (shape.type == "Arrow") {
-        var headlen = 10;
-        var dx = shape.endX - shape.startX;
-        var dy = shape.endY - shape.startY;
-        var angle = Math.atan2(dy, dx);
+        let headlen = 10;
+        let dx = shape.endX - shape.startX;
+        let dy = shape.endY - shape.startY;
+        let angle = Math.atan2(dy, dx);
         this.context.beginPath();
         this.context.moveTo(shape.startX, shape.startY);
         this.context.lineTo(shape.endX, shape.endY);
@@ -143,14 +142,16 @@ export class Game {
 
   mouseMoveHandler = (e: MouseEvent) => {
     if (this.clicked) {
-      if (this.selectedButton === "Pencil" && this.painting) {
-        this.context.strokeStyle = "rgba(255, 255, 255,0.5)";
+      if (this.selectedButton === "Pencil") {
+        if (this.painting) {
+          this.context.strokeStyle = "rgba(255, 255, 255,0.5)";
 
-        this.context.lineTo(e.offsetX, e.offsetY);
-        this.context.stroke();
-        this.lastX = e.offsetX;
-        this.lastY = e.offsetY;
-        this.currentStrokes.push({ x: this.lastX, y: this.lastY });
+          this.context.lineTo(e.offsetX, e.offsetY);
+          this.context.stroke();
+          this.lastX = e.offsetX;
+          this.lastY = e.offsetY;
+          this.currentStrokes.push({ x: this.lastX, y: this.lastY });
+        }
       } else {
         this.clearCanvas();
         this.context.strokeStyle = "rgba(255, 255, 255)";
@@ -280,7 +281,7 @@ export class Game {
         })
       );
     } catch (error) {
-      console.error("WebSocket send failed:", error);
+      console.log("WebSocket send failed:", error);
     }
   };
 
