@@ -36,6 +36,15 @@ type Shapes =
       startY: number;
       endX: number;
       endY: number;
+    }
+  | {
+      type: "Pencil";
+      strokes: Strokes[];
     };
 
-type Tools = "Rectangle" | "Circle" | "Diamond" | "Arrow" | "Line";
+type Tools = "Rectangle" | "Circle" | "Diamond" | "Arrow" | "Line" | "Pencil";
+
+type Strokes = {
+  x: number;
+  y: number;
+};

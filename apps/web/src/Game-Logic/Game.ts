@@ -11,6 +11,11 @@ export class Game {
   private startX = 0;
   private startY = 0;
 
+  private lastX = 0;
+  private lastY = 0;
+  private painting: boolean;
+  private currentStrokes: Strokes[];
+
   constructor(
     canvas: HTMLCanvasElement,
     roomId: string,
@@ -24,7 +29,12 @@ export class Game {
       (this.selectedButton = selectedButton),
       (this.clicked = false),
       (this.existingShapes = []);
+
+    this.painting = false;
+    this.currentStrokes = [];
+
     console.log("selectedtool", this.selectedButton);
+
     this.init();
     this.initHandlers();
     this.initMouseHandler();
@@ -105,6 +115,13 @@ export class Game {
         this.context.moveTo(shape.startX, shape.startY);
         this.context.lineTo(shape.endX, shape.endY);
         this.context.stroke();
+      } else if (shape.type == "Pencil") {
+        this.context.beginPath();
+        this.context.moveTo(shape.strokes[0].x, shape.strokes[0].y);
+        shape.strokes.forEach((point) => {
+          this.context.lineTo(point.x, point.y);
+        });
+        this.context.stroke();
       }
     });
   }
@@ -113,66 +130,85 @@ export class Game {
     this.clicked = true;
     this.startX = e.clientX;
     this.startY = e.clientY;
+
+    if (this.selectedButton == "Pencil") {
+      this.painting = true;
+      this.lastX = e.offsetX;
+      this.lastY = e.offsetY;
+      this.context.beginPath();
+      this.context.moveTo(this.lastX, this.lastY);
+      this.currentStrokes = [{ x: e.offsetX, y: e.offsetY }];
+    }
   };
 
   mouseMoveHandler = (e: MouseEvent) => {
     if (this.clicked) {
-      const width = e.clientX - this.startX;
-      const height = e.clientY - this.startY;
+      if (this.selectedButton === "Pencil" && this.painting) {
+        this.context.strokeStyle = "rgba(255, 255, 255,0.5)";
 
-      this.clearCanvas();
-      this.context.strokeStyle = "rgba(255, 255, 255)";
-      if (this.selectedButton === "Rectangle") {
-        this.context.strokeRect(this.startX, this.startY, width, height);
-      } else if (this.selectedButton == "Circle") {
-        this.context.beginPath();
-        this.context.ellipse(
-          this.startX + width / 2,
-          this.startY + height / 2,
-          Math.abs(width) / 2,
-          Math.abs(height) / 2,
-          0,
-          0,
-          2 * Math.PI
-        );
+        this.context.lineTo(e.offsetX, e.offsetY);
         this.context.stroke();
-      } else if (this.selectedButton == "Diamond") {
-        this.context.beginPath();
-        this.context.moveTo(this.startX + width / 2, this.startY);
-        this.context.lineTo(this.startX + width, this.startY + height / 2);
-        this.context.lineTo(this.startX + width / 2, this.startY + height);
-        this.context.lineTo(this.startX, this.startY + height / 2);
-        this.context.closePath();
-        this.context.stroke();
-      } else if (this.selectedButton == "Arrow") {
-        var headlen = 10;
-        var dx = e.clientX - this.startX;
-        var dy = e.clientY - this.startY;
-        var angle = Math.atan2(dy, dx);
-        this.context.beginPath();
-        this.context.moveTo(this.startX, this.startY);
-        this.context.lineTo(e.clientX, e.clientY);
-        this.context.lineTo(
-          e.clientX - headlen * Math.cos(angle - Math.PI / 6),
-          e.clientY - headlen * Math.sin(angle - Math.PI / 6)
-        );
-        this.context.moveTo(e.clientX, e.clientY);
-        this.context.lineTo(
-          e.clientX - headlen * Math.cos(angle + Math.PI / 6),
-          e.clientY - headlen * Math.sin(angle + Math.PI / 6)
-        );
-        this.context.stroke();
-      } else if (this.selectedButton == "Line") {
-        this.context.beginPath();
-        this.context.moveTo(this.startX, this.startY);
-        this.context.lineTo(e.clientX, e.clientY);
-        this.context.stroke();
+        this.lastX = e.offsetX;
+        this.lastY = e.offsetY;
+        this.currentStrokes.push({ x: this.lastX, y: this.lastY });
+      } else {
+        this.clearCanvas();
+        this.context.strokeStyle = "rgba(255, 255, 255)";
+        const width = e.clientX - this.startX;
+        const height = e.clientY - this.startY;
+        if (this.selectedButton === "Rectangle") {
+          this.context.strokeRect(this.startX, this.startY, width, height);
+        } else if (this.selectedButton === "Circle") {
+          this.context.beginPath();
+          this.context.ellipse(
+            this.startX + width / 2,
+            this.startY + height / 2,
+            Math.abs(width) / 2,
+            Math.abs(height) / 2,
+            0,
+            0,
+            2 * Math.PI
+          );
+          this.context.stroke();
+        } else if (this.selectedButton === "Diamond") {
+          this.context.beginPath();
+          this.context.moveTo(this.startX + width / 2, this.startY);
+          this.context.lineTo(this.startX + width, this.startY + height / 2);
+          this.context.lineTo(this.startX + width / 2, this.startY + height);
+          this.context.lineTo(this.startX, this.startY + height / 2);
+          this.context.closePath();
+          this.context.stroke();
+        } else if (this.selectedButton === "Arrow") {
+          const headlen = 10;
+          const dx = e.clientX - this.startX;
+          const dy = e.clientY - this.startY;
+          const angle = Math.atan2(dy, dx);
+          this.context.beginPath();
+          this.context.moveTo(this.startX, this.startY);
+          this.context.lineTo(e.clientX, e.clientY);
+          this.context.lineTo(
+            e.clientX - headlen * Math.cos(angle - Math.PI / 6),
+            e.clientY - headlen * Math.sin(angle - Math.PI / 6)
+          );
+          this.context.moveTo(e.clientX, e.clientY);
+          this.context.lineTo(
+            e.clientX - headlen * Math.cos(angle + Math.PI / 6),
+            e.clientY - headlen * Math.sin(angle + Math.PI / 6)
+          );
+          this.context.stroke();
+        } else if (this.selectedButton === "Line") {
+          this.context.beginPath();
+          this.context.moveTo(this.startX, this.startY);
+          this.context.lineTo(e.clientX, e.clientY);
+          this.context.stroke();
+        }
       }
     }
   };
 
   mouseUpHandler = (e: MouseEvent) => {
     this.clicked = false;
+
     let shape: Shapes | null = null;
     const width = e.clientX - this.startX;
     const height = e.clientY - this.startY;
@@ -220,6 +256,13 @@ export class Game {
         endX: e.clientX,
         endY: e.clientY,
       };
+    } else if (this.selectedButton === "Pencil") {
+      this.painting = false;
+
+      shape = {
+        type: "Pencil",
+        strokes: this.currentStrokes,
+      };
     }
 
     if (!shape) {
@@ -242,15 +285,15 @@ export class Game {
   };
 
   initMouseHandler() {
-    const debouncedMouseMoveHandler = debounce(
-      this.mouseMoveHandler.bind(this),
-      50
-    );
+    // const debouncedMouseMoveHandler = debounce(
+    //   this.mouseMoveHandler.bind(this),
+    //   50
+    // );
 
     this.canvas.addEventListener("mousedown", this.mouseDownHandler);
-    this.canvas.addEventListener("mousemove", debouncedMouseMoveHandler);
+    this.canvas.addEventListener("mousemove", this.mouseMoveHandler);
     this.canvas.addEventListener("mouseup", this.mouseUpHandler);
 
-    this.mouseMoveHandler = debouncedMouseMoveHandler;
+    // this.mouseMoveHandler = debouncedMouseMoveHandler;
   }
 }
