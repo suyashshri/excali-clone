@@ -7,7 +7,7 @@ const PORT = 3001;
 
 app.use(
   cors({
-    origin: "https://sketchflow.codexyash.com", // Allow requests from your domain
+    origin: ["http://sketchflow.codexyash.com", "https://sketchflow.codexyash.com"],
     methods: "GET, POST, PUT, DELETE",
     credentials: true,
   })
