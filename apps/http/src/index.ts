@@ -5,7 +5,13 @@ import cors from "cors";
 const app = express();
 const PORT = 3001;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://sketchflow.codexyash.com", // Allow requests from your domain
+    methods: "GET, POST, PUT, DELETE",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use("/user", userRouter);
 
