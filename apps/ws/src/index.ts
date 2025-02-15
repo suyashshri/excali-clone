@@ -3,7 +3,10 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_SECRET } from "./config";
 import { db } from "@repo/db/client";
 
-const wss = new WebSocketServer({ port: 8080 });
+import { createServer, Server } from "http";
+const server: Server = createServer();
+const wss = new WebSocketServer({ noServer: true });
+// const wss = new WebSocketServer({ port: 8080 });
 
 enum Role {
   User,
@@ -34,7 +37,15 @@ function authenticateUser(token: string): string | null {
   }
 }
 
+server.on("upgrade", (request, socket, head) => {
+  console.log("WebSocket upgrade request received");
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit("connection", ws, request);
+  });
+});
+
 wss.on("connection", (ws, request) => {
+  console.log(`Client connected: ${request.socket.remoteAddress}`);
   const url = request.url;
 
   if (!url) {
@@ -115,4 +126,8 @@ wss.on("connection", (ws, request) => {
       });
     }
   });
+});
+
+server.listen(8080, () => {
+  console.log("WebSocket server running on port 8080");
 });
