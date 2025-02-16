@@ -224,6 +224,8 @@ export class Game {
         if (this.selectedButton === "Eraser") {
           if (!this.isErasing) return;
           const eraserSize = 6;
+          const eraserX = e.clientX;
+          const eraserY = e.clientY;
           const eraserXLeft = e.clientX - eraserSize;
           const eraserXRight = e.clientX + eraserSize;
           const eraserYTop = e.clientY - eraserSize;
@@ -284,6 +286,123 @@ export class Game {
 
               if (isTouching) {
                 console.log(`Erasing Circle with ID: ${shape.id}`);
+                this.existingShapes.splice(i, 1);
+
+                if (shape.id) {
+                  await removeShapeFomDB(this.roomId, shape.id);
+                  this.existingShapes = await getExistingShapes(this.roomId);
+                }
+              }
+            } else if (shape.type == "Diamond") {
+              const centerX = shape.x + shape.width / 2;
+              const centerY = shape.y + shape.height / 2;
+
+              const x1 = shape.x,
+                y1 = centerY;
+              const x2 = centerX,
+                y2 = shape.y;
+              const x3 = shape.x + shape.width,
+                y3 = centerY;
+              const x4 = centerX,
+                y4 = shape.y + shape.height;
+
+              function isPointNearLine(
+                x1: any,
+                y1: any,
+                x2: any,
+                y2: any,
+                px: any,
+                py: any,
+                threshold: any
+              ) {
+                const lineLength = Math.hypot(x2 - x1, y2 - y1);
+                const distance =
+                  Math.abs(
+                    (y2 - y1) * px - (x2 - x1) * py + x2 * y1 - y2 * x1
+                  ) / lineLength;
+                return distance <= threshold;
+              }
+
+              const isTouching =
+                isPointNearLine(x1, y1, x2, y2, eraserX, eraserY, eraserSize) ||
+                isPointNearLine(x2, y2, x3, y3, eraserX, eraserY, eraserSize) ||
+                isPointNearLine(x3, y3, x4, y4, eraserX, eraserY, eraserSize) ||
+                isPointNearLine(x4, y4, x1, y1, eraserX, eraserY, eraserSize);
+
+              if (isTouching) {
+                this.existingShapes.splice(i, 1);
+
+                if (shape.id) {
+                  await removeShapeFomDB(this.roomId, shape.id);
+                  this.existingShapes = await getExistingShapes(this.roomId);
+                }
+              }
+            } else if (shape.type === "Arrow" || shape.type === "Line") {
+              const { startX, startY, endX, endY } = shape;
+
+              function isPointNearLine(
+                x1: any,
+                y1: any,
+                x2: any,
+                y2: any,
+                px: any,
+                py: any,
+                threshold: any
+              ) {
+                const lineLength = Math.hypot(x2 - x1, y2 - y1);
+                if (lineLength === 0) return false;
+
+                const distance =
+                  Math.abs(
+                    (y2 - y1) * px - (x2 - x1) * py + x2 * y1 - y2 * x1
+                  ) / lineLength;
+
+                return distance <= threshold;
+              }
+
+              const isTouching = isPointNearLine(
+                startX,
+                startY,
+                endX,
+                endY,
+                eraserX,
+                eraserY,
+                eraserSize
+              );
+
+              if (isTouching) {
+                this.existingShapes.splice(i, 1);
+
+                if (shape.id) {
+                  await removeShapeFomDB(this.roomId, shape.id);
+                  this.existingShapes = await getExistingShapes(this.roomId);
+                }
+              }
+            } else if (shape.type === "Pencil") {
+              const { strokes } = shape;
+
+              function isPointNear(
+                px: any,
+                py: any,
+                sx: any,
+                sy: any,
+                threshold: any
+              ) {
+                return Math.hypot(px - sx, py - sy) <= threshold;
+              }
+
+              let isTouching = false;
+
+              for (let j = 0; j < strokes.length; j++) {
+                const { x, y } = strokes[j];
+
+                if (isPointNear(eraserX, eraserY, x, y, eraserSize)) {
+                  isTouching = true;
+                  break;
+                }
+              }
+
+              if (isTouching) {
                 this.existingShapes.splice(i, 1);
 
                 if (shape.id) {
