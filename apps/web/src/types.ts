@@ -40,6 +40,9 @@ export type Shapes =
   | {
       type: "Pencil";
       strokes: Strokes[];
+    }
+  | {
+      type: "Eraser";
     };
 
 // type Tools = "Rectangle" | "Circle" | "Diamond" | "Arrow" | "Line" | "Pencil";

@@ -5,11 +5,13 @@ import {
   ArrowRight,
   Circle,
   Diamond,
+  Eraser,
   Minus,
   Pencil,
   RectangleHorizontal,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 
 export default function Canvas({
   roomId,
@@ -103,7 +105,53 @@ export default function Canvas({
         >
           <Pencil className="text-white" />
         </button>
+        {/* <button
+          className={
+            selectedButton === "Eraser"
+              ? "w-10 h-10 rounded bg-cyan-600 flex justify-center items-center"
+              : "w-10 h-10 rounded flex justify-center items-center hover:bg-gray-800"
+          }
+          onClick={() => setSelectedButton("Eraser")}
+        >
+          <Eraser className="text-white" />
+        </button> */}
       </div>
+      <button
+        className="fixed top-6 right-8 bg-sky-600 px-4 py-2 rounded-md hover:bg-sky-200 hover:text-black"
+        onClick={() => {
+          navigator.clipboard
+            .writeText(window.location.href)
+            .then(() => {
+              toast.success("Copied to Clipboard", {
+                position: "bottom-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+              });
+            })
+            .catch(() =>
+              toast.error("Unable to Copy", {
+                position: "bottom-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+              })
+            );
+        }}
+      >
+        Share Your Canvas
+      </button>
+      <ToastContainer />
     </div>
   );
 }

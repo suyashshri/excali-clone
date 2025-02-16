@@ -16,6 +16,7 @@ export class Game {
   private lastY = 0;
   private painting: boolean;
   private currentStrokes: Strokes[];
+  private isErasing: boolean;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -32,6 +33,7 @@ export class Game {
     this.existingShapes = [];
     this.painting = false;
     this.currentStrokes = [];
+    this.isErasing = false;
     console.log("selectedtool", this.selectedButton);
 
     this.init();
@@ -48,6 +50,20 @@ export class Game {
   async init() {
     this.existingShapes = await getExistingShapes(this.roomId);
     this.clearCanvas();
+    if (this.selectedButton == "Eraser") {
+      this.isErasing = true;
+      this.canvas.style.cursor = "url('/eraser.png'), auto";
+    } else if (
+      this.selectedButton == "Rectangle" ||
+      this.selectedButton == "Circle" ||
+      this.selectedButton == "Diamond" ||
+      this.selectedButton == "Arrow" ||
+      this.selectedButton == "Line"
+    ) {
+      this.canvas.style.cursor = "crosshair";
+    } else {
+      this.canvas.style.cursor = "pointer";
+    }
   }
 
   initHandlers() {
@@ -204,6 +220,19 @@ export class Game {
           this.context.stroke();
         }
       }
+      if (!this.isErasing) return;
+      const eraserSize = 24;
+      const eraserX = e.clientX;
+      const eraserY = e.clientY;
+      for (let i = this.existingShapes.length; i >= 0; i--) {
+        const shape = this.existingShapes[i];
+        const isColliding = shape.type === "Rectangle";
+        //   eraserX < shape.x + shape.width &&
+        //   eraserX + eraserSize > shape.x &&
+        //   eraserY < shape.y + shape.height &&
+        //   eraserY + eraserSize > shape.y;
+        console.log("isColliding");
+      }
     }
   };
 
@@ -213,6 +242,9 @@ export class Game {
     let shape: Shapes | null = null;
     const width = e.clientX - this.startX;
     const height = e.clientY - this.startY;
+    // if (this.selectedButton != "Eraser") {
+    //   this.canvas.style.cursor = "default";
+    // }
 
     if (this.selectedButton === "Rectangle") {
       shape = {
