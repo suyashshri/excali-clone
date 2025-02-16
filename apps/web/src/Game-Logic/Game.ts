@@ -1,5 +1,5 @@
 import { Shapes, Strokes } from "@/types";
-import { getExistingShapes } from "./http";
+import { getExistingShapes, removeShapeFomDB } from "./http";
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -49,6 +49,8 @@ export class Game {
 
   async init() {
     this.existingShapes = await getExistingShapes(this.roomId);
+    console.log(this.existingShapes);
+
     this.clearCanvas();
     if (this.selectedButton == "Eraser") {
       this.isErasing = true;
@@ -156,7 +158,7 @@ export class Game {
     }
   };
 
-  mouseMoveHandler = (e: MouseEvent) => {
+  mouseMoveHandler = async (e: MouseEvent) => {
     if (this.clicked) {
       if (this.selectedButton === "Pencil") {
         if (this.painting) {
@@ -219,19 +221,79 @@ export class Game {
           this.context.lineTo(e.clientX, e.clientY);
           this.context.stroke();
         }
-      }
-      if (!this.isErasing) return;
-      const eraserSize = 24;
-      const eraserX = e.clientX;
-      const eraserY = e.clientY;
-      for (let i = this.existingShapes.length; i >= 0; i--) {
-        const shape = this.existingShapes[i];
-        const isColliding = shape.type === "Rectangle";
-        //   eraserX < shape.x + shape.width &&
-        //   eraserX + eraserSize > shape.x &&
-        //   eraserY < shape.y + shape.height &&
-        //   eraserY + eraserSize > shape.y;
-        console.log("isColliding");
+        if (this.selectedButton === "Eraser") {
+          if (!this.isErasing) return;
+          const eraserSize = 6;
+          const eraserXLeft = e.clientX - eraserSize;
+          const eraserXRight = e.clientX + eraserSize;
+          const eraserYTop = e.clientY - eraserSize;
+          const eraserYBottom = e.clientY + eraserSize;
+          for (let i = 0; i < this.existingShapes.length; i++) {
+            const shape = this.existingShapes[i];
+
+            if (shape.type === "Rectangle") {
+              const rectXLeft = Math.min(shape.x, shape.x + shape.width);
+              const rectXRight = Math.max(shape.x, shape.x + shape.width);
+              const rectYTop = Math.min(shape.y, shape.y + shape.height);
+              const rectYBottom = Math.max(shape.y, shape.y + shape.height);
+
+              const touchingLeftBorder =
+                eraserXRight >= rectXLeft &&
+                eraserXLeft <= rectXLeft &&
+                eraserYBottom >= rectYTop &&
+                eraserYTop <= rectYBottom;
+              const touchingRightBorder =
+                eraserXLeft <= rectXRight &&
+                eraserXRight >= rectXRight &&
+                eraserYBottom >= rectYTop &&
+                eraserYTop <= rectYBottom;
+              const touchingTopBorder =
+                eraserYBottom >= rectYTop &&
+                eraserYTop <= rectYTop &&
+                eraserXRight >= rectXLeft &&
+                eraserXLeft <= rectXRight;
+              const touchingBottomBorder =
+                eraserYTop <= rectYBottom &&
+                eraserYBottom >= rectYBottom &&
+                eraserXRight >= rectXLeft &&
+                eraserXLeft <= rectXRight;
+
+              const isTouching =
+                touchingLeftBorder ||
+                touchingRightBorder ||
+                touchingTopBorder ||
+                touchingBottomBorder;
+
+              if (isTouching) {
+                this.existingShapes.splice(i, 1);
+
+                if (shape.id) {
+                  await removeShapeFomDB(this.roomId, shape.id);
+                  this.existingShapes = await getExistingShapes(this.roomId);
+                }
+              }
+            } else if (shape.type == "Circle") {
+              const dx = e.clientX - shape.x;
+              const dy = e.clientY - shape.y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+
+              const isTouching =
+                distance >=
+                  Math.min(shape.radiusX, shape.radiusY) - eraserSize &&
+                distance <= Math.max(shape.radiusX, shape.radiusY) + eraserSize;
+
+              if (isTouching) {
+                console.log(`Erasing Circle with ID: ${shape.id}`);
+                this.existingShapes.splice(i, 1);
+
+                if (shape.id) {
+                  await removeShapeFomDB(this.roomId, shape.id);
+                  this.existingShapes = await getExistingShapes(this.roomId);
+                }
+              }
+            }
+          }
+        }
       }
     }
   };

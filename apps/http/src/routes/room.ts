@@ -41,6 +41,10 @@ roomRouter.get("/chats/:roomId", middleware, async (req, res) => {
       where: {
         roomId: roomId,
       },
+      select: {
+        id: true,
+        message: true,
+      },
       orderBy: {
         id: "desc",
       },
@@ -54,6 +58,24 @@ roomRouter.get("/chats/:roomId", middleware, async (req, res) => {
     res.json({
       message: [],
     });
+  }
+});
+
+roomRouter.delete("/chats/:roomId", middleware, async (req, res) => {
+  try {
+    const roomId = Number(req.params.roomId);
+    const { id } = req.body;
+    const deletedChat = await db.chat.delete({
+      where: {
+        roomId,
+        id,
+      },
+    });
+    res.json({
+      deletedChat,
+    });
+  } catch (error) {
+    console.log("Error deleting messages: ", error);
   }
 });
 

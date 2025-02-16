@@ -11,13 +11,27 @@ export async function getExistingShapes(roomId: string) {
     }
   );
   const messages = response.data.messages;
+  console.log(messages);
 
-  const shapes = messages.map((x: { message: string }) => {
+  const shapes = messages.map((x: { id: string; message: string }) => {
     const parsedMessage = JSON.parse(x.message);
-    return parsedMessage.shape;
+    const shapeTool = parsedMessage.shape;
+    shapeTool.id = x.id;
+    return shapeTool;
   });
 
   return shapes;
+}
+
+export async function removeShapeFomDB(roomId: string, id: string) {
+  await axios.delete(`${HTTP_BACKEND}/user/room/chats/${roomId}`, {
+    headers: {
+      Authorization: localStorage.getItem("token"),
+    },
+    data: {
+      id,
+    },
+  });
 }
 
 // export function debounce(func: Function, wait: number) {

@@ -105,7 +105,7 @@ export default function Canvas({
         >
           <Pencil className="text-white" />
         </button>
-        {/* <button
+        <button
           className={
             selectedButton === "Eraser"
               ? "w-10 h-10 rounded bg-cyan-600 flex justify-center items-center"
@@ -114,7 +114,7 @@ export default function Canvas({
           onClick={() => setSelectedButton("Eraser")}
         >
           <Eraser className="text-white" />
-        </button> */}
+        </button>
       </div>
       <button
         className="fixed top-6 right-8 bg-sky-600 px-4 py-2 rounded-md hover:bg-sky-200 hover:text-black"
