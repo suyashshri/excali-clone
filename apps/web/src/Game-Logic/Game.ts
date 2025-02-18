@@ -297,6 +297,10 @@ export class Game {
               const centerX = shape.x + shape.width / 2;
               const centerY = shape.y + shape.height / 2;
 
+              // "x": 22,
+              // "y": 23,
+              // "width": 64,
+              // "height": 74
               const x1 = shape.x,
                 y1 = centerY;
               const x2 = centerX,
@@ -315,12 +319,30 @@ export class Game {
                 py: any,
                 threshold: any
               ) {
-                const lineLength = Math.hypot(x2 - x1, y2 - y1);
-                const distance =
-                  Math.abs(
-                    (y2 - y1) * px - (x2 - x1) * py + x2 * y1 - y2 * x1
-                  ) / lineLength;
-                return distance <= threshold;
+                const A = px - x1;
+                const B = py - y1;
+                const C = x2 - x1;
+                const D = y2 - y1;
+
+                const dot = A * C + B * D;
+                const len_sq = C * C + D * D;
+                let param = len_sq !== 0 ? dot / len_sq : -1;
+
+                let xx, yy;
+                if (param < 0) {
+                  xx = x1;
+                  yy = y1;
+                } else if (param > 1) {
+                  xx = x2;
+                  yy = y2;
+                } else {
+                  xx = x1 + param * C;
+                  yy = y1 + param * D;
+                }
+
+                const dx = px - xx;
+                const dy = py - yy;
+                return Math.sqrt(dx * dx + dy * dy) <= threshold;
               }
 
               const isTouching =
@@ -429,6 +451,7 @@ export class Game {
 
     if (this.selectedButton === "Rectangle") {
       shape = {
+        id: crypto.randomUUID(),
         type: "Rectangle",
         x: this.startX,
         y: this.startY,
@@ -437,6 +460,8 @@ export class Game {
       };
     } else if (this.selectedButton === "Circle") {
       shape = {
+        id: crypto.randomUUID(),
+
         type: "Circle",
         x: this.startX + width / 2,
         y: this.startY + height / 2,
@@ -448,6 +473,8 @@ export class Game {
       };
     } else if (this.selectedButton === "Diamond") {
       shape = {
+        id: crypto.randomUUID(),
+
         type: "Diamond",
         x: this.startX,
         y: this.startY,
@@ -456,6 +483,8 @@ export class Game {
       };
     } else if (this.selectedButton === "Arrow") {
       shape = {
+        id: crypto.randomUUID(),
+
         type: "Arrow",
         startX: this.startX,
         startY: this.startY,
@@ -464,6 +493,8 @@ export class Game {
       };
     } else if (this.selectedButton === "Line") {
       shape = {
+        id: crypto.randomUUID(),
+
         type: "Line",
         startX: this.startX,
         startY: this.startY,
@@ -474,6 +505,8 @@ export class Game {
       this.painting = false;
 
       shape = {
+        id: crypto.randomUUID(),
+
         type: "Pencil",
         strokes: this.currentStrokes,
       };

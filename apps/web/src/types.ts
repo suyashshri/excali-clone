@@ -1,6 +1,6 @@
 export type Shapes =
   | {
-      id?: string;
+      id: string;
       type: "Rectangle";
       x: number;
       y: number;
@@ -8,8 +8,7 @@ export type Shapes =
       height: number;
     }
   | {
-      id?: string;
-
+      id: string;
       type: "Circle";
       x: number;
       y: number;
@@ -20,8 +19,7 @@ export type Shapes =
       endAngle: number;
     }
   | {
-      id?: string;
-
+      id: string;
       type: "Diamond";
       x: number;
       y: number;
@@ -29,8 +27,7 @@ export type Shapes =
       height: number;
     }
   | {
-      id?: string;
-
+      id: string;
       type: "Arrow";
       startX: number;
       startY: number;
@@ -38,8 +35,7 @@ export type Shapes =
       endY: number;
     }
   | {
-      id?: string;
-
+      id: string;
       type: "Line";
       startX: number;
       startY: number;
@@ -47,14 +43,12 @@ export type Shapes =
       endY: number;
     }
   | {
-      id?: string;
-
+      id: string;
       type: "Pencil";
       strokes: Strokes[];
     }
   | {
-      id?: string;
-
+      id: string;
       type: "Eraser";
     };
 

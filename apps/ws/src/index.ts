@@ -102,10 +102,12 @@ wss.on("connection", (ws, request) => {
     if (parsedData.type === "chat") {
       const roomId = Number(parsedData.roomId);
       const message = parsedData.message;
+      const parsedMessagetoJSON = JSON.parse(message);
 
       await db.chat.create({
         data: {
           roomId: roomId,
+          messageId: parsedMessagetoJSON.shape.id,
           message,
           userId,
         },

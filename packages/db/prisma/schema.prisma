@@ -29,10 +29,13 @@ model Room {
 }
 
 model Chat {
-  id      Int    @id @default(autoincrement())
-  roomId  Int
-  message String
-  userId  String
-  room    Room   @relation(fields: [roomId], references: [id])
-  user    User   @relation(fields: [userId], references: [id])
+  id        Int    @id @default(autoincrement())
+  roomId    Int
+  messageId String @unique
+  message   String
+  userId    String
+  room      Room   @relation(fields: [roomId], references: [id])
+  user      User   @relation(fields: [userId], references: [id])
+
+  @@unique([roomId, messageId])
 }

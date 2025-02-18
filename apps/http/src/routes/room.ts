@@ -41,10 +41,6 @@ roomRouter.get("/chats/:roomId", middleware, async (req, res) => {
       where: {
         roomId: roomId,
       },
-      select: {
-        id: true,
-        message: true,
-      },
       orderBy: {
         id: "desc",
       },
@@ -64,11 +60,11 @@ roomRouter.get("/chats/:roomId", middleware, async (req, res) => {
 roomRouter.delete("/chats/:roomId", middleware, async (req, res) => {
   try {
     const roomId = Number(req.params.roomId);
-    const { id } = req.body;
-    const deletedChat = await db.chat.delete({
+    const { id }: { id: string } = req.body;
+    const deletedChat = await db.chat.deleteMany({
       where: {
         roomId,
-        id,
+        messageId: id,
       },
     });
     res.json({
