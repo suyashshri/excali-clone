@@ -296,11 +296,6 @@ export class Game {
             } else if (shape.type == "Diamond") {
               const centerX = shape.x + shape.width / 2;
               const centerY = shape.y + shape.height / 2;
-
-              // "x": 22,
-              // "y": 23,
-              // "width": 64,
-              // "height": 74
               const x1 = shape.x,
                 y1 = centerY;
               const x2 = centerX,
@@ -362,43 +357,59 @@ export class Game {
             } else if (shape.type === "Arrow" || shape.type === "Line") {
               const { startX, startY, endX, endY } = shape;
 
-              function isPointNearLine(
+              function isPointNearSegment(
+                px: any,
+                py: any,
                 x1: any,
                 y1: any,
                 x2: any,
                 y2: any,
-                px: any,
-                py: any,
                 threshold: any
               ) {
-                const lineLength = Math.hypot(x2 - x1, y2 - y1);
-                if (lineLength === 0) return false;
+                // Vector calculation to check how close (px, py) is to segment (x1, y1) -> (x2, y2)
+                const A = px - x1;
+                const B = py - y1;
+                const C = x2 - x1;
+                const D = y2 - y1;
 
-                const distance =
-                  Math.abs(
-                    (y2 - y1) * px - (x2 - x1) * py + x2 * y1 - y2 * x1
-                  ) / lineLength;
+                const dot = A * C + B * D;
+                const len_sq = C * C + D * D;
+                let param = len_sq !== 0 ? dot / len_sq : -1;
 
-                return distance <= threshold;
+                let xx, yy;
+                if (param < 0) {
+                  xx = x1;
+                  yy = y1;
+                } else if (param > 1) {
+                  xx = x2;
+                  yy = y2;
+                } else {
+                  xx = x1 + param * C;
+                  yy = y1 + param * D;
+                }
+
+                const dx = px - xx;
+                const dy = py - yy;
+                return Math.sqrt(dx * dx + dy * dy) <= threshold;
               }
 
-              const isTouching = isPointNearLine(
+              const isTouching = isPointNearSegment(
+                eraserX,
+                eraserY,
                 startX,
                 startY,
                 endX,
                 endY,
-                eraserX,
-                eraserY,
                 eraserSize
               );
 
               if (isTouching) {
-                this.existingShapes.splice(i, 1);
-
-                if (shape.id) {
-                  await removeShapeFomDB(this.roomId, shape.id);
-                  this.existingShapes = await getExistingShapes(this.roomId);
-                }
+                console.log("Eraser touched the line/arrow!");
+                this.existingShapes.splice(i, 1); // Remove the shape
+                if (!shape.id) return;
+                const id = shape.id;
+                await removeShapeFomDB(this.roomId, id);
+                this.existingShapes = await getExistingShapes(this.roomId);
               }
             } else if (shape.type === "Pencil") {
               const { strokes } = shape;
