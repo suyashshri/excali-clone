@@ -34,7 +34,6 @@ export class Game {
     this.painting = false;
     this.currentStrokes = [];
     this.isErasing = false;
-    console.log("selectedtool", this.selectedButton);
 
     this.init();
     this.initHandlers();
@@ -49,7 +48,6 @@ export class Game {
 
   async init() {
     this.existingShapes = await getExistingShapes(this.roomId);
-    console.log(this.existingShapes);
 
     this.clearCanvas();
     if (this.selectedButton == "Eraser") {
@@ -285,7 +283,6 @@ export class Game {
                 distance <= Math.max(shape.radiusX, shape.radiusY) + eraserSize;
 
               if (isTouching) {
-                console.log(`Erasing Circle with ID: ${shape.id}`);
                 this.existingShapes.splice(i, 1);
 
                 if (shape.id) {
@@ -404,8 +401,7 @@ export class Game {
               );
 
               if (isTouching) {
-                console.log("Eraser touched the line/arrow!");
-                this.existingShapes.splice(i, 1); // Remove the shape
+                this.existingShapes.splice(i, 1);
                 if (!shape.id) return;
                 const id = shape.id;
                 await removeShapeFomDB(this.roomId, id);
@@ -456,9 +452,6 @@ export class Game {
     let shape: Shapes | null = null;
     const width = e.clientX - this.startX;
     const height = e.clientY - this.startY;
-    // if (this.selectedButton != "Eraser") {
-    //   this.canvas.style.cursor = "default";
-    // }
 
     if (this.selectedButton === "Rectangle") {
       shape = {
@@ -522,7 +515,6 @@ export class Game {
         strokes: this.currentStrokes,
       };
     }
-
     if (!shape) {
       return;
     }
@@ -543,15 +535,8 @@ export class Game {
   };
 
   initMouseHandler() {
-    // const debouncedMouseMoveHandler = debounce(
-    //   this.mouseMoveHandler.bind(this),
-    //   50
-    // );
-
     this.canvas.addEventListener("mousedown", this.mouseDownHandler);
     this.canvas.addEventListener("mousemove", this.mouseMoveHandler);
     this.canvas.addEventListener("mouseup", this.mouseUpHandler);
-
-    // this.mouseMoveHandler = debouncedMouseMoveHandler;
   }
 }

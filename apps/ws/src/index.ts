@@ -38,14 +38,12 @@ function authenticateUser(token: string): string | null {
 }
 
 server.on("upgrade", (request, socket, head) => {
-  console.log("WebSocket upgrade request received");
   wss.handleUpgrade(request, socket, head, (ws) => {
     wss.emit("connection", ws, request);
   });
 });
 
 wss.on("connection", (ws, request) => {
-  console.log(`Client connected: ${request.socket.remoteAddress}`);
   const url = request.url;
 
   if (!url) {
